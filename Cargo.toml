@@ -1,0 +1,16 @@
+[package]
+name = "csv-slice"
+version = "0.1.0"
+edition = "2021"
+authors = ["mikaelmoise00@gmail.com"]
+description = "Extract rows or columns from CSV files without loading the entire file"
+license = "MIT"
+repository = "https://github.com/arrismo/csv-slice"
+keywords = ["csv", "data", "slice", "extract"]
+categories = ["command-line-utilities", "parsing"]
+
+[dependencies]
+csv = "1.2"
+thiserror = "1.0"
+serde = { version = "1.0", features = ["derive"] }
+clap = { version = "4.0", features = ["derive"] }
