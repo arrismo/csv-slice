@@ -3,9 +3,8 @@ Extract rows or columns from CSV files without loading the entire file
 
 
 ## Installation
-Clone the repository and build with Cargo:
 ```sh
-cargo build --release
+cargo install csv-slice
 ```
 
 ## CLI Usage
