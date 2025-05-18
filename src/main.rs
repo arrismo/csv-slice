@@ -28,7 +28,9 @@ enum Commands {
     },
 }
 
-fn main() -> Result<(), csv_slice::CsvSliceError> {
+use csv_slice::CsvSliceError;
+
+fn main() -> Result<(), CsvSliceError> {
     let cli = Cli::parse();
 
     match &cli.command {

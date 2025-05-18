@@ -1,7 +1,53 @@
 // src/lib.rs
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use tempfile::NamedTempFile;
+    use std::io::Write;
+
+    #[test]
+    fn test_extract_rows() {
+        let csv_data = "Name,Age\nAlice,30\nBob,25\nCharlie,40\n";
+        let mut file = NamedTempFile::new().unwrap();
+        write!(file, "{}", csv_data).unwrap();
+        let path = file.path();
+        let rows = super::extract_rows(path, 0, 2).unwrap();
+        assert_eq!(rows.len(), 2);
+        assert_eq!(rows[0].get(0), Some("Alice"));
+        assert_eq!(rows[1].get(0), Some("Bob"));
+        // file is deleted here
+    }
+
+    #[test]
+    fn test_extract_columns() {
+        let csv_data = "Name,Age\nAlice,30\nBob,25\nCharlie,40\n";
+        let mut file = NamedTempFile::new().unwrap();
+        write!(file, "{}", csv_data).unwrap();
+        let path = file.path();
+        let columns = super::extract_columns(path, &["Name"]).unwrap();
+        assert_eq!(columns.len(), 3);
+        assert_eq!(columns[0][0], "Alice");
+        assert_eq!(columns[1][0], "Bob");
+        assert_eq!(columns[2][0], "Charlie");
+    }
+
+    #[test]
+    fn test_extract_columns_not_found() {
+        let csv_data = "Name,Age\nAlice,30\n";
+        let mut file = NamedTempFile::new().unwrap();
+        write!(file, "{}", csv_data).unwrap();
+        let path = file.path();
+        let result = super::extract_columns(path, &["Email"]);
+        assert!(result.is_err());
+    }
+}
+// END TESTS
 use csv::StringRecord;
 use std::fs::File;
-use std::io::{self, BufReader};
+mod error;
+pub use crate::error::CsvSliceError;
+use std::io::BufReader;
 
 pub fn extract_rows<P: AsRef<std::path::Path>>(
     path: P,
