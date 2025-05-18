@@ -116,8 +116,19 @@ pub use crate::error::CsvSliceError; // Re-export the CsvSliceError type
 /// # Example
 /// ```
 /// use csv_slice::extract_rows;
-/// let rows = extract_rows("data.csv", 0, 5).unwrap();
-/// // This extracts the first 5 rows from data.csv
+/// use std::io::Write;
+/// use std::fs::File;
+/// 
+/// // Create a temporary CSV file for the example
+/// let temp_dir = tempfile::tempdir().unwrap();
+/// let file_path = temp_dir.path().join("sample.csv");
+/// let mut file = File::create(&file_path).unwrap();
+/// writeln!(file, "Name,Age\nAlice,30\nBob,25\nCharlie,40").unwrap();
+/// 
+/// // Now extract the first 2 rows
+/// let rows = extract_rows(&file_path, 0, 2).unwrap();
+/// assert_eq!(rows.len(), 2);
+/// assert_eq!(rows[0].get(0), Some("Alice"));
 /// ```
 pub fn extract_rows<P: AsRef<std::path::Path>>(
     path: P,
@@ -166,8 +177,20 @@ pub fn extract_rows<P: AsRef<std::path::Path>>(
 /// # Example
 /// ```
 /// use csv_slice::extract_columns;
-/// let data = extract_columns("data.csv", &["Name", "Email"]).unwrap();
-/// // This extracts the Name and Email columns from data.csv
+/// use std::io::Write;
+/// use std::fs::File;
+/// 
+/// // Create a temporary CSV file for the example
+/// let temp_dir = tempfile::tempdir().unwrap();
+/// let file_path = temp_dir.path().join("sample.csv");
+/// let mut file = File::create(&file_path).unwrap();
+/// writeln!(file, "Name,Email,Age\nAlice,alice@example.com,30\nBob,bob@example.com,25").unwrap();
+/// 
+/// // Now extract the Name and Email columns
+/// let data = extract_columns(&file_path, &["Name", "Email"]).unwrap();
+/// assert_eq!(data.len(), 2); // Two rows of data
+/// assert_eq!(data[0][0], "Alice"); // First row, Name column
+/// assert_eq!(data[0][1], "alice@example.com"); // First row, Email column
 /// ```
 pub fn extract_columns<P: AsRef<std::path::Path>>(
     path: P,
